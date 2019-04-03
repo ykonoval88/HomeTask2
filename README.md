@@ -14,6 +14,6 @@ TestAssociatedContainerWithCollisions hash = rnd(1, 20000)
 
 Summary
 
-The TestAssociatedContainerWithHash3 where hash = x uses array. As result Median time is greater in all scopr of benchmark tests.
+The TestAssociatedContainerWithHash3 where hash = x uses array shown a result with Median time greater than in all other benchmark tests.
 
 A lot of collisions also affects performance, because we extend storage on the same position many times.
