@@ -15,6 +15,8 @@ TestAssociatedContainerWithCollisions hash = rnd(1, 20000)
 
 Summary
 
-The TestAssociatedContainerWithHash3 where hash = x and TestAssociatedContainerWithHash1 thar are used array (the small gaps) shown a result with Median time greater than benchmark for TestAssociatedContainerWithHash2 where we have a gap, but not a lot of collisions .
+- The TestAssociatedContainerWithHash3 where hash = x and TestAssociatedContainerWithHash1 thar are used array (the small gaps) shown a result with Median time greater than benchmark for TestAssociatedContainerWithHash2 where we have a gap, but not a lot of collisions .
 
-A lot of collisions also affects performance, because we extend storage on the same position many times and should rebase hash table when a lot of items refers to the same hash code.
+- A lot of collisions also affects performance, because we extend storage on the same position many times and should rebase hash table   when a lot of items refers to the same hash code.
+
+- I would prefer hash = ((x >> 16) ^ x) * 0x45d9f3b, because it includes a +/- bit in hash generation.
