@@ -8,5 +8,6 @@ namespace HomeTask2.NewIntTypes
 {
     public interface IInt
     {
+        int Value { get; }
     }
 }

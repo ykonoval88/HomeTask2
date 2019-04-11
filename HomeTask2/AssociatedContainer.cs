@@ -24,12 +24,13 @@ namespace HomeTask2
     public class AssociatedContainer<TKey, TValue>: IDictionary<TKey, TValue>
     where TKey:IInt
     {
+        private int limit = 19;
         private const int ArrayChunk = 1000;
 
         private bool _gapDeltaExceeded;
         private Entry<TKey, TValue>[] _array = new Entry<TKey, TValue>[ArrayChunk];
 
-        private readonly SortedDictionary<int, TValue[]> _hashTable = new SortedDictionary<int, TValue[]>();
+        public Dictionary<int, List<Entry<TKey, TValue>>> _hashTable = new Dictionary<int, List<Entry<TKey, TValue>>>();
 
         private void AddValue(TKey key, TValue value)
         {
@@ -39,7 +40,7 @@ namespace HomeTask2
             {
                 CopyToHashTable();
             }
-            else if(prevGapDeltaExceeded)
+            else if(prevGapDeltaExceeded || (_hashTable.Count == 0 && _gapDeltaExceeded))
             {
                 AddToHashTable(key, value);
             }
@@ -47,55 +48,59 @@ namespace HomeTask2
 
         private bool AddToArray(TKey key, TValue value)
         {
-            int pointerKey = key.GetHashCode();
-            int arrayPos = Math.Abs(pointerKey);
+            int index = key.Value;
+            //int arrayPos = Math.Abs(pointerKey);
             
             if (_gapDeltaExceeded)
                 return false;
 
             // Check a big gap
-            if (_array.Length < arrayPos && (arrayPos - _array.Length) > ArrayChunk)
+            if (_array.Length < index && (index - _array.Length) > ArrayChunk)
             {
                 _gapDeltaExceeded = true;
                 return false;
             }
 
-            // Re-calculate next position. Required if another value already present in the same position.
-            if (_array.Length > 0)
+            if (_array.Length <= index)
             {
-                var lastPosition = Array.FindLastIndex(_array, a => a != null);
-                arrayPos = lastPosition > 1 ? lastPosition + 1 : arrayPos;
-
-                // Resize array if position greater that array.
-                if (_array.Length <= arrayPos)
-                {
-                    Array.Resize(ref _array, _array.Length + ArrayChunk);
-                }
+                Array.Resize(ref _array, _array.Length + ArrayChunk);
             }
-
-            _array[arrayPos] = new Entry<TKey, TValue>(key, value);
+            _array[index] = new Entry<TKey, TValue>(key, value);
             return true;
         }
 
+      
         private void AddToHashTable(TKey key, TValue value)
         {
-            int pointerKey = key.GetHashCode();
-            AddToHashTable(pointerKey, value);
-        }
-
-        private void AddToHashTable(int key, TValue value)
-        {
-            int pointerKey = key.GetHashCode();
-            if (_hashTable.ContainsKey(pointerKey))
+            int index = key.GetHashCode() % limit;
+            if (_hashTable.ContainsKey(index))
             {
-                var values = _hashTable[pointerKey];
-                Array.Resize(ref values, values.Length + 1);
-                values[values.Length-1] = value;
-                _hashTable[pointerKey] = values;
+                var bunch = _hashTable[index];
+                foreach (var item in bunch)
+                {
+                    if(item.Key.Value == key.Value) throw new ArgumentException("An element with the same key already exists");
+                    if (key.Value > item.Key.Value) break;
+                }
+                // Rebase hash table
+                if (bunch.Count > limit)
+                {
+                    limit = limit * 2;
+                    var hashTable2 = new Dictionary<int, List<Entry<TKey, TValue>>>(_hashTable);
+                    _hashTable = new Dictionary<int, List<Entry<TKey, TValue>>>();
+                    foreach (var hashTableItems in hashTable2)
+                    {
+                        foreach (var hashTableItem in hashTableItems.Value)
+                        {
+                            AddToHashTable(hashTableItem.Key, hashTableItem.Value);
+                        }
+                    }
+                }
+
+                bunch.Add(new Entry<TKey, TValue>(key, value));
             }
             else
             {
-                _hashTable.Add(pointerKey, new[] { value });
+                _hashTable.Add(index, new List<Entry<TKey, TValue>> {new Entry<TKey, TValue>(key, value)});
             }
         }
 

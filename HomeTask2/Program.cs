@@ -18,7 +18,12 @@ namespace HomeTask2
             for (int i = 0; i < Iterations; i++)
             {
                 IntHash1 integer = i;
-                container.Add(integer, string.Format(ObjectName, i));
+                integer = integer.GetHashCode();
+                try
+                {
+                    container.Add(integer, string.Format(ObjectName, i));
+                }
+                catch (ArgumentException) { }
             }
         }
 
@@ -26,11 +31,16 @@ namespace HomeTask2
         public void TestAssociatedContainerWithHash2()
         {
             Console.WriteLine("Test an associated container of pairs: <int, object> with hash = ((x >> 16) ^ x) * 0x45d9f3b");
-            AssociatedContainer<IInt, object> container = new AssociatedContainer<IInt, object>();
+            AssociatedContainer<IInt, object> container2 = new AssociatedContainer<IInt, object>();
             for (int i = 0; i < Iterations; i++)
             {
                 IntHash2 integer = i;
-                container.Add(integer, string.Format(ObjectName, i));
+                integer = integer.GetHashCode();
+                try
+                {
+                    container2.Add(integer, string.Format(ObjectName, i));
+                }
+                catch (ArgumentException) { }
             }
         }
 
@@ -38,11 +48,16 @@ namespace HomeTask2
         public void TestAssociatedContainerWithHash3()
         {
             Console.WriteLine("Test an associated container of pairs: <int, object> with hash = x");
-            AssociatedContainer<IInt, object> container = new AssociatedContainer<IInt, object>();
+            AssociatedContainer<IInt, object> container0 = new AssociatedContainer<IInt, object>();
             for (int i = 0; i < Iterations; i++)
             {
                 IntHash3 integer = i;
-                container.Add(integer, string.Format(ObjectName, i));
+                integer = integer.GetHashCode();
+                try
+                {
+                    container0.Add(integer, string.Format(ObjectName, i));
+                }
+                catch (ArgumentException) { }
             }
         }
 
@@ -50,11 +65,16 @@ namespace HomeTask2
         public void TestAssociatedContainerWithCollisions()
         {
             Console.WriteLine("Test an associated container of pairs: <int, object> with bad hash");
-            AssociatedContainer<IInt, object> container = new AssociatedContainer<IInt, object>();
+            AssociatedContainer<IInt, object> container3 = new AssociatedContainer<IInt, object>();
             for (int i = 0; i < Iterations; i++)
             {
-                IntHashCollision i1 = i;
-                container.Add(i1, string.Format(ObjectName, i));
+                IntHashCollision integer = i;
+                integer = integer.GetHashCode();
+                try
+                {
+                    container3.Add(integer, string.Format(ObjectName, i));
+                }
+                catch (ArgumentException) { }
             }
         }
     }

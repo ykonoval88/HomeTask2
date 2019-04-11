@@ -5,7 +5,7 @@ namespace HomeTask2.NewIntTypes
 {
     public class IntHash1: IComparable, IInt
     {
-        protected readonly int Value;
+        public int Value { get; private set; }
 
         protected IntHash1(int value)
         {
